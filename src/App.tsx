@@ -1,34 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { Box, Divider, ThemeProvider, Typography } from "@mui/material";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { CreateNewPost, PostList } from "./components/posts";
+import { theme } from "./theme";
+import { IAllPosts, IPost } from "./interfaces";
+import { useFetch } from "./hooks";
+
+const App = () => {
+  const [data, loading] = useFetch<IAllPosts>({
+    url: "http://localhost:4000/post",
+    method: "GET",
+  });
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
-  )
-}
+    <ThemeProvider theme={theme}>
+      <Box
+        component="main"
+        sx={{ width: "1200px", maxWidth: "95%", mx: "auto" }}
+      >
+        <CreateNewPost />
+        <Divider sx={{ my: 3 }} />
+        {loading ? (
+          <Typography variant="h2" mt={5} textAlign="center">
+            Loading...
+          </Typography>
+        ) : (
+          <PostList data={data.posts} />
+        )}
+      </Box>
+    </ThemeProvider>
+  );
+};
 
-export default App
+export default App;
